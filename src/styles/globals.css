@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Poppins", sans-serif !important;
+}
+:root {
+  --primary-color: #0070f3;
+  --primary-color-light: #dcecff;
+  --gray-100: #292d31;
+  --gray-200: #2f3235;
+  --gray-300: #444749;
+  --gray-400: #6a6d70;
+  --gray-500: #919497;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+  --bs-table-accent-bg: var(--primary-color-light) !important;
+  color: var(--primary-color) !important;
+}
+tr, td {
+  background: #fff;
+}
+
+.react-calendar__tile--now {
+  background: var(--primary-color-light) !important;
+}
+.react-calendar__tile--active {
+  background: var(--primary-color) !important;
+}
+
+td {
+  align-items: center;
+  height: 32px;
+}

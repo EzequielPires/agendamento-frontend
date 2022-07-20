@@ -1,0 +1,144 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+
+    background: #f5f5f5;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.content {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 72px;
+    padding: 1.5rem;
+
+    overflow: auto;
+}
+
+.schedules {
+    margin-top: 1.5rem;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+}
+
+.btn_add {
+    width: 200px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba($color: #000000, $alpha: 0.1);
+
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+
+    background: var(--primary-color);
+
+    &:hover {
+        color: #fff;
+    }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+}
+
+.checkbox_wrapper {
+    display: flex;
+    flex-direction: column;
+
+    h5 {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--gray-300);
+    }
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    input {
+        display: none;
+
+        &:checked {
+            & ~ .check {
+                border: 2px solid var(--primary-color);
+                svg {
+                    display: flex;
+                }
+            }
+            & ~ label {
+                color: var(--primary-color);
+            }
+        }
+    }
+
+    .check {
+        width: 24px;
+        height: 24px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 0 4px rgba($color: #000000, $alpha: 0.15);
+
+        svg {
+            display: none;
+            color: var(--primary-color);
+        }
+    }
+
+    label {
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--gray-300);
+    }
+}
+
+.radio {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+
+    label {
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--gray-300);
+    }
+}
+
+.opening_hours {
+    display: flex;
+    flex-direction: column;
+
+    button {
+        max-width: 375px;
+    }
+}
