@@ -2,16 +2,18 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CalendarComponent } from 'src/components/CalendarComponent';
-import { CardScheduling } from 'src/components/CardScheduling';
-import { SearchScheduling } from 'src/components/SearchScheduling';
 import { ServiceCard } from 'src/components/Cards/ServiceCard';
 import { Navbar } from 'src/components/site/Navbar';
 import { api } from 'src/services/api';
 import styles from '../styles/pages/business.module.scss';
 import { CollaboratorCard } from 'src/components/Cards/CollaboratorCard';
 import { useBusiness } from 'src/context/BusinessContext';
+import { useAuth } from 'src/context/AuthContext';
+import { useNotification } from 'src/hooks/useNotification';
 
 export default function Business({ businessData, schedulesData }) {
+    const {user} = useAuth();
+    const notification = useNotification();
     const { availableTimes } = useBusiness();
     const router = useRouter();
     const { id } = router.query;
@@ -19,7 +21,6 @@ export default function Business({ businessData, schedulesData }) {
     const [times, setTimes] = useState([]);
     const [time, setTime] = useState('');
     const [business, setBusiness] = useState(null);
-    const [schedules, setSchedules] = useState(null);
     const [service, setService] = useState('');
     const [collaborator, setCollaborator] = useState('');
     const now = new Date();
@@ -39,6 +40,28 @@ export default function Business({ businessData, schedulesData }) {
         setTimes(times);
     }
 
+    const handleCreateScheduling = async () => {
+        const response = await api.post('/scheduling', {
+            date: date.toLocaleDateString(),
+            time,
+            business: business.id,
+            client: user.id,
+            service,
+            collaborator
+        }).then(res => {
+            return res.data;
+        });
+
+        if(response.success) {
+            notification.execute('success', `Agendamento realizado com sucesso!`);
+            setTime('');
+            setTimes([]);
+        } else {
+            notification.execute('danger', `Erro ao realizar agendamento, tente novamente!`);
+        }
+
+    }
+
     useEffect(() => {
         setTime('');
     }, [date]);
@@ -46,9 +69,6 @@ export default function Business({ businessData, schedulesData }) {
     useEffect(() => {
         setBusiness(businessData);
     }, [businessData]);
-    useEffect(() => {
-        setSchedules(schedulesData);
-    }, [schedulesData]);
 
     if (!business) {
         return <p>carregando...</p>
@@ -82,7 +102,7 @@ export default function Business({ businessData, schedulesData }) {
                             selected={collaborator === item.id}
                             onClick={() => setCollaborator(item.id)}
                             name={item.name}
-                            avatar={null}
+                            avatar={item.avatar}
                             phone={item.phone}
                         />
                     ))}
@@ -93,7 +113,7 @@ export default function Business({ businessData, schedulesData }) {
                 />
                 <button className={styles.button} onClick={handleSubmitSerach}>Buscar</button>
                 <div className={styles.times}>
-                    {times.length > 0 ? <h4>Horários disponíveis</h4> : <h4>Nenhum horário para mostrar</h4>}
+                    {times.length > 0 ? <h4>Horários disponíveis</h4> : null}
                     <div className={styles.flex}>
                         {times.map(item => (
                             <button
@@ -106,11 +126,7 @@ export default function Business({ businessData, schedulesData }) {
                         ))}
                     </div>
                 </div>
-                <SearchScheduling
-                    date={date}
-                    services={business?.services ?? []}
-                    collaborators={business?.collaborators ?? []}
-                />
+                {time ? <button className={styles.button} onClick={handleCreateScheduling}>Agendar</button> : null}
             </div>
         </>
     )

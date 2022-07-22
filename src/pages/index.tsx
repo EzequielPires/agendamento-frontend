@@ -18,8 +18,8 @@ export default function Home({ businessData }) {
   return (
     <div className={styles.container}>
       {business?.map(item => (
-        <Link href={`/business?id=${item.id}`}>
-          <a >{item.name}</a>
+        <Link key={item.id} href={`/business?id=${item.id}`}>
+          <a>{item.name}</a>
         </Link>
       ))}
     </div>

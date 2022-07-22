@@ -13,20 +13,23 @@ import { FaCheck } from 'react-icons/fa';
 import { useBusiness } from 'src/context/BusinessContext';
 import { ButtonBack } from 'src/components/ButtonBack';
 import { useRouter } from 'next/router';
+import { CropImage } from 'src/components/CroppeImage';
+import { ButtonDelete } from 'src/components/Form/ButtonDelete';
 
 export default function EditProfissionais({ servicesData, collaboratorData }) {
-    const { updateCollaborator } = useBusiness();
+    const { updateCollaborator, deleteCollaborator } = useBusiness();
     const [services, setServices] = useState([]);
-    const [arrayServices, setArrayServices] = useState([]);
-    const [role, setRole] = useState('collaborator');
-
     const router = useRouter();
-    const {id} = router.query;
+    const { id } = router.query;
+    const [show, setShow] = useState(false);
 
     const name = useForm('');
     const email = useForm('');
     const password = useForm('');
     const phone = useForm('phone');
+    const [avatar, setAvatar] = useState(null);
+    const [arrayServices, setArrayServices] = useState([]);
+    const [role, setRole] = useState('collaborator');
 
     const serviceOnChange = (service: string) => {
         let exist = false;
@@ -53,7 +56,20 @@ export default function EditProfissionais({ servicesData, collaboratorData }) {
             phone: phone.value,
             services: arrayServices,
             role: role
+        }).then(async () => {
+            if(avatar) {
+                var file = new File([avatar], avatar.name);
+                const data = new FormData();
+                data.append('file', file);
+
+                await api.post(`/users/upload-avatar/${id}`, data);
+            }
         });
+    }
+
+    const handleDeleteCollaborator = async (e) => {
+        e.preventDefault();
+        await deleteCollaborator(String(id));
     }
 
     const isServiceChecked = (item) => {
@@ -86,16 +102,25 @@ export default function EditProfissionais({ servicesData, collaboratorData }) {
         <div className={styles.container}>
             <Navbar />
             <AsideBar />
+            {show ? <CropImage 
+                close={() => setShow(false)}
+                imagePath={avatar ? URL.createObjectURL(avatar) : null}
+                setImage={setAvatar}
+            /> : null}
             <div className={styles.content}>
                 <div className="d-flex gap-3 align-items-center mb-4">
                     <ButtonBack link={'/profissionais'} />
                     <h4 className='mb-0'>Editar Funcionário {collaboratorData.name}</h4>
                 </div>
                 <form className={styles.form} onSubmit={handleSubmit}>
-                    <div className={styles.avatar}>
-                        <input type="file" name="avatar" id="avatar" />
-                        <label htmlFor="avatar"></label>
-                    </div>
+                    <label htmlFor="avatar" className={styles.avatar}>
+                        {collaboratorData?.avatar && avatar === null ? <img src={`http://localhost:3000/${collaboratorData.avatar}`} alt="" /> : null}
+                        {avatar ? <img src={URL.createObjectURL(avatar)} alt="" /> : null}
+                    </label>
+                    <input type="file" name="avatar" id="avatar" className='d-none' onChange={(e) => {
+                        setShow(true);
+                        setAvatar(e.target.files[0]);
+                    }} />
                     <Input
                         id='name'
                         type='text'
@@ -156,6 +181,10 @@ export default function EditProfissionais({ servicesData, collaboratorData }) {
 
                     <ButtonSubmit
                         title="Salvar"
+                    />
+                    <ButtonDelete 
+                        title='Deletar'
+                        onClick={handleDeleteCollaborator}
                     />
                 </form>
             </div>

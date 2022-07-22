@@ -48,8 +48,9 @@ interface BusinessProps {
     createCollaborator: ({ email, name, password, phone, services }: RequereCollaborator) => Promise<void>;
     createBusinessHours: ({ days }: RequereBusinessHours) => Promise<void>;
     updateCollaborator: ({ id, name, phone, email, services, role }: RequereCollaborator) => Promise<void>;
-    updateService: ({id, description, duration, price, title }: RequereService) => Promise<void>;
-    availableTimes: ({day, month, year, id, collaborator, service}) => Promise<Array<any>>;
+    updateService: ({ id, description, duration, price, title }: RequereService) => Promise<void>;
+    availableTimes: ({ day, month, year, id, collaborator, service }) => Promise<Array<any>>;
+    deleteCollaborator: (id: string) => Promise<void>;
 }
 
 const BusinessContext = createContext({} as BusinessProps);
@@ -148,7 +149,7 @@ function BusinessProvider({ children }) {
             if (!collaborator || collaborator.success === false) {
                 notificationHook.execute('danger', `Falha ao cadastrar o profissional`);
             } else {
-                notificationHook.execute('success', `O profissional ${collaborator.data.title} foi cadastrado com sucesso.`);
+                notificationHook.execute('success', `O profissional ${collaborator.data.name} foi cadastrado com sucesso.`);
                 router.push('/profissionais');
             }
         } catch (error) {
@@ -173,11 +174,28 @@ function BusinessProvider({ children }) {
             if (!collaborator || collaborator.success === false) {
                 notificationHook.execute('danger', `Falha ao cadastrar o profissional`);
             } else {
-                notificationHook.execute('success', `O profissional ${collaborator.data.title} foi cadastrado com sucesso.`);
+                notificationHook.execute('success', `O profissional ${collaborator.data.name} foi cadastrado com sucesso.`);
                 router.push('/profissionais');
             }
         } catch (error) {
             notificationHook.execute('danger', `Falha ao cadastrar o serviço`);
+        } finally {
+            handleHiddenLoading();
+        }
+    }
+
+    async function deleteCollaborator(id: string) {
+        try {
+            handleShowLoading();
+            const response = await api.delete(`/users/${id}`).then(res => res.data);
+            if (response.success) {
+                notificationHook.execute('success', `Colaborador removido com sucesso.`);
+                router.push('/profissionais');
+            } else {
+                notificationHook.execute('danger', `Falha ao deletar collaborador`);
+            }
+        } catch (error) {
+            notificationHook.execute('danger', `Falha ao deletar collaborador`);
         } finally {
             handleHiddenLoading();
         }
@@ -206,11 +224,11 @@ function BusinessProvider({ children }) {
         }
     }
 
-    async function availableTimes({day, month, year, id, collaborator, service}) {
+    async function availableTimes({ day, month, year, id, collaborator, service }) {
         const { data } = await api.get(
             `/scheduling/available-times?day=${day}&month=${month}&year=${year}&business=${id}&collaborator=${collaborator}&service=${service}`
         );
-        if(!data.success) {
+        if (!data.success) {
             notificationHook.execute('danger', data.message);
         }
         return data.data ?? [];
@@ -220,10 +238,11 @@ function BusinessProvider({ children }) {
         <BusinessContext.Provider value={{
             create,
             createService,
+            updateService,
             createCollaborator,
             createBusinessHours,
             updateCollaborator,
-            updateService,
+            deleteCollaborator,
             availableTimes
         }}>
             {children}

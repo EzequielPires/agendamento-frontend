@@ -1,0 +1,65 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    background: #1d1d1dbd;
+    
+    z-index: 9999;
+
+    button {
+        width: 180px;
+        height: 40px;
+
+        border-radius: 8px;
+
+        margin-top: 1rem;
+    }
+}
+
+.cropper {
+    width: 700px;
+    height: 400px;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+
+    background: #fff;
+    
+    border-radius: 16px;
+    padding: 1rem;
+
+    button {
+        flex: 1;
+
+        &:first-child {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            border: 0;
+
+            background: #ee2d2d;
+        }
+        &:last-child {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            border: 0;
+
+            background: var(--primary-color);
+        }
+    }
+}
